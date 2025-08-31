@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'obsws'
+
+require 'pry'
+
+OBSWS::Requests::Client.new(host: 'localhost', port: 4455, password: File.read('.password').strip).run do |sock|
+  $sock = sock
+  puts "Use \e[1m$sock\e[0m"
+  Pry.start
+end
