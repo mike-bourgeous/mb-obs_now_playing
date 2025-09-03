@@ -27,8 +27,8 @@
             }
 
             let msg = null;
-            let titleText = null;
-            let artistText = null;
+            let titleText = undefined;
+            let artistText = undefined;
 
             if (titleElement && artistElement && playerElement && !playerElement.paused) {
                 titleText = titleElement.textContent;
@@ -36,8 +36,6 @@
                 msg = "YouTube Audio Library: " + artistText + " - " + titleText;
             } else {
                 msg = "" + originalTitle + ": Not playing";
-                titleText = null;
-                artistText = null;
             }
 
             if (priorMsg !== msg) {
