@@ -6,7 +6,7 @@ module MB
     OBS_CONFIG_PATHS = [
       '~/.var/app/com.obsproject.Studio/config/obs-studio/user.ini',
       '~/.config/obs-studio/user.ini',
-    ].freeze
+    ].map(&File.method(:expand_path)).freeze
 
     def initialize(text_source_name)
       @text_source_name = text_source_name.dup.freeze
@@ -57,7 +57,7 @@ module MB
 
       File
         .readlines(config_file)
-        .detect { |l| l.strip.start_with?(ServerPassword) }
+        .detect { |l| l.strip.start_with?('ServerPassword') }
         .split('=', 2)[1]
         .rstrip
     end
