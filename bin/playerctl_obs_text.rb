@@ -13,7 +13,14 @@ MB::PlayerctlClient.new do |d|
   app, v = d.detect { |app, h| h[:status] == 'Playing' }
   if v
     puts "\e[33m#{app} playing \e[1m#{[v[:album], v[:artist], v[:title]].compact.join(' - ')}\e[0m"
-    obs.text = "Music: #{[v[:album], v[:artist], v[:title]].compact.join("\n")}"
+
+    lines = v.slice(:album, :artist, :title).compact.map { |k, v|
+      "#{k.to_s.capitalize}: #{v}\n"
+    }
+
+    lines = ["\n"] * (9 - lines.length) + lines
+
+    obs.text = lines.join
   else
     puts "\e[34mpaused\e[0m"
     obs.text = ''
