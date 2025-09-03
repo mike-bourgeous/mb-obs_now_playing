@@ -18,26 +18,37 @@
     // TODO: maybe hook into DOM events and playback status events?
     setInterval(
         function() {
-            const title = document.querySelector('.ytmus-player.track-info #title');
-            const artist = document.querySelector('.ytmus-player.track-info #artist');
-            const player = document.querySelector('audio.ytmus-player');
+            const titleElement = document.querySelector('.ytmus-player.track-info #title');
+            const artistElement = document.querySelector('.ytmus-player.track-info #artist');
+            const playerElement = document.querySelector('audio.ytmus-player');
 
             if (originalTitle === undefined) {
                 originalTitle = document.title;
             }
 
             let msg = null;
+            let titleText = null;
+            let artistText = null;
 
-            if (title && artist && player && !player.paused) {
-                msg = "YouTube Audio Library: " + artist.textContent + " - " + title.textContent;
+            if (titleElement && artistElement && playerElement && !playerElement.paused) {
+                titleText = titleElement.textContent;
+                artistText = artistElement.textContent;
+                msg = "YouTube Audio Library: " + artistText + " - " + titleText;
             } else {
                 msg = "" + originalTitle + ": Not playing";
+                titleText = null;
+                artistText = null;
             }
 
             if (priorMsg !== msg) {
                 console.log("Playback status: " + msg);
                 document.title = msg;
                 priorMsg = msg;
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: titleText,
+                    artist: artistText,
+                    album: "YouTube Audio Library",
+                });
             }
         },
         2000
