@@ -2,20 +2,30 @@
 
 require 'pry'
 
+class Hash
+  def deep_dup
+    self.map { |k, v|
+      k = k.respond_to?(:deep_dup) ? k.deep_dup : k.dup
+      v = v.respond_to?(:deep_dup) ? v.deep_dup : v.dup
+      [k, v]
+    }.to_h
+  end
+end
+
 # Waits for a moment of silence before taking an action.  Every time reset is
 # called, the timer starts over.  When the timer expires, the block passed to
 # the constructor is called.
+#
+# This would not be good in a situation where there's never a silent moment.
 class RateLimitTimer
   class SillyError < RuntimeError; end
 
   def initialize(timeout, &block)
+    calling_thread = Thread.current
+    first = true
+
     @timeout = timeout.to_f
-
-    @mtx = Mutex.new
-
-    @t = Thread.current
-    @first = true
-    @waiting = false
+    @q = Queue.new
 
     @thread = Thread.new do
       Thread.current.name = 'timer thread'
@@ -23,25 +33,28 @@ class RateLimitTimer
       loop do
         begin
           begin
-            @t.wakeup if @first
-            @first = false
+            puts 'beginning of timer loop' # XXX
 
-            @waiting = true
+            if first
+              calling_thread.wakeup
+              calling_thread = nil
+              first = false
+            end
+
             sleep @timeout
-            @waiting = false
 
-            @mtx.synchronize do
+            unless @q.empty?
+              puts 'got data, skipping block'
+              # If there's anything in the queue, it means we were woken up.
+              @q.pop until @q.empty?
+            else
+              puts 'no data, calling block'
+              # If the queue was empty, it means the timeout expired.
               block.call
             end
 
           rescue SillyError
-            @waiting = false
-
-            # FIXME: this sync structure is messy and could allow exceptions to
-            # be raised between locks.
-            @mtx.synchronize do
-              puts "Reset timer to #{@timeout}"
-            end
+            puts "Reset timer to #{@timeout}"
           end
 
         rescue SillyError
@@ -52,22 +65,26 @@ class RateLimitTimer
     end
 
     sleep
+
   end
 
   def reset
-    @mtx.lock
-    puts "Thread #{Thread.current} #{caller} waking up #{@thread} while waiting #{@waiting}"
-    @thread.raise SillyError
-
-  ensure
-    @mtx.unlock
+    puts "Thread #{Thread.current} #{caller} waking up #{@thread}"
+    @q.push(nil)
+    @thread.wakeup
   end
 end
 
 d = {}
+prior_d = nil
 
 timeout = RateLimitTimer.new(0.5) do
-  puts d
+  if d != prior_d
+    puts "\e[1m#{d}\e[0m"
+    prior_d = d.deep_dup
+  else
+    puts "d is prior_d"
+  end
 end
 
 metadata_thread = Thread.new do
