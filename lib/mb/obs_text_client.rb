@@ -40,7 +40,7 @@ module MB
     end
 
     def find_obs_password
-      config_file = OBS_CONFIG_PATHS.detect { |p| File.readable?('1' + p) }
+      config_file = OBS_CONFIG_PATHS.detect { |p| File.readable?(p) }
 
       unless config_file
         puts "Unable to find OBS configuration file to read websocket password"
