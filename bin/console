@@ -1,8 +1,12 @@
 #!/usr/bin/env ruby
 
+require 'bundler/setup'
 require 'obsws'
-
 require 'pry'
+
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+# TODO: require app code
 
 OBSWS::Requests::Client.new(host: 'localhost', port: 4455, password: File.read('.password').strip).run do |sock|
   $sock = sock
