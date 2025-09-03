@@ -12,34 +12,34 @@
 
 
 (function() {
-  let originalTitle = undefined;
-  let priorMsg = null;
+    let originalTitle = undefined;
+    let priorMsg = null;
 
-  // TODO: maybe hook into DOM events and playback status events?
-  setInterval(
-    function() {
-      const title = document.querySelector('.ytmus-player.track-info #title');
-    	const artist = document.querySelector('.ytmus-player.track-info #artist');
-      const player = document.querySelector('audio.ytmus-player');
-      
-      if (originalTitle === undefined) {
-        originalTitle = document.title;
-      }
-      
-      let msg = null;
-      
-    	if (title && artist && player && !player.paused) {
-        msg = "YouTube Audio Library: " + artist.textContent + " - " + title.textContent;
-    	} else {
-      	msg = "" + originalTitle + ": Not playing";
-    	}
-      
-      if (priorMsg !== msg) {
-        console.log("Playback status: " + msg);
-        document.title = msg;
-        priorMsg = msg;
-      }
-	  },
-	  2000
-	);
+    // TODO: maybe hook into DOM events and playback status events?
+    setInterval(
+        function() {
+            const title = document.querySelector('.ytmus-player.track-info #title');
+            const artist = document.querySelector('.ytmus-player.track-info #artist');
+            const player = document.querySelector('audio.ytmus-player');
+
+            if (originalTitle === undefined) {
+                originalTitle = document.title;
+            }
+
+            let msg = null;
+
+            if (title && artist && player && !player.paused) {
+                msg = "YouTube Audio Library: " + artist.textContent + " - " + title.textContent;
+            } else {
+                msg = "" + originalTitle + ": Not playing";
+            }
+
+            if (priorMsg !== msg) {
+                console.log("Playback status: " + msg);
+                document.title = msg;
+                priorMsg = msg;
+            }
+        },
+        2000
+    );
 })();
