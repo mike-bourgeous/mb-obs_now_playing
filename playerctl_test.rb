@@ -52,8 +52,12 @@ class PlayerctlClient
 
     timer = RateLimitTimer.new(timeout) do
       if d != prior_d
-        puts "\e[1m#{d}\e[0m"
-        block.call(d)
+        if block
+          block.call(d)
+        else
+          puts "\e[1m#{d}\e[0m (no block given)"
+        end
+
         prior_d = deep_dup(d)
       end
     end
@@ -112,10 +116,9 @@ class PlayerctlClient
 end
 
 PlayerctlClient.new do |d|
-  puts "D #{d.inspect}"
   app, v = d.detect { |app, h| h[:status] == 'Playing' }
   if v
-    puts "\e[33m#{app} playing\e[0m"
+    puts "\e[33m#{app} playing \e[1m#{[v[:album], v[:artist], v[:title]].compact.join(' - ')}\e[0m"
   else
     puts "\e[34mpaused\e[0m"
   end
