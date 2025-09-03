@@ -18,8 +18,6 @@ end
 #
 # This would not be good in a situation where there's never a silent moment.
 class RateLimitTimer
-  class SillyError < RuntimeError; end
-
   def initialize(timeout, &block)
     calling_thread = Thread.current
     first = true
@@ -31,35 +29,20 @@ class RateLimitTimer
       Thread.current.name = 'timer thread'
 
       loop do
-        begin
-          begin
-            puts 'beginning of timer loop' # XXX
+        if first
+          calling_thread.wakeup
+          calling_thread = nil
+          first = false
+        end
 
-            if first
-              calling_thread.wakeup
-              calling_thread = nil
-              first = false
-            end
+        sleep @timeout
 
-            sleep @timeout
-
-            unless @q.empty?
-              puts 'got data, skipping block'
-              # If there's anything in the queue, it means we were woken up.
-              @q.pop until @q.empty?
-            else
-              puts 'no data, calling block'
-              # If the queue was empty, it means the timeout expired.
-              block.call
-            end
-
-          rescue SillyError
-            puts "Reset timer to #{@timeout}"
-          end
-
-        rescue SillyError
-          puts "Another error!"
-          retry
+        unless @q.empty?
+          # If there's anything in the queue, it means we were woken up.
+          @q.pop until @q.empty?
+        else
+          # If the queue was empty, it means the timeout expired.
+          block.call
         end
       end
     end
@@ -69,7 +52,6 @@ class RateLimitTimer
   end
 
   def reset
-    puts "Thread #{Thread.current} #{caller} waking up #{@thread}"
     @q.push(nil)
     @thread.wakeup
   end
@@ -82,8 +64,6 @@ timeout = RateLimitTimer.new(0.5) do
   if d != prior_d
     puts "\e[1m#{d}\e[0m"
     prior_d = d.deep_dup
-  else
-    puts "d is prior_d"
   end
 end
 
