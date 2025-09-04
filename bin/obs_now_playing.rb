@@ -40,7 +40,7 @@ MB::PlayerctlClient.new do |d|
 
     lines = ["\n"] * (9 - lines.length) + lines
 
-    puts "\n\n\t#{lines.join("\t")}\n\n"
+    puts "\n\n\t#{lines.join("\t").strip}\n\n"
 
     obs.text = lines.join
   else
