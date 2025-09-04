@@ -6,9 +6,9 @@
 // ==/UserScript==
 
 
-// The initial 2s delay and interval handles page title change by JS during
-// loading, the addition of the player HTML only when playback starts, and
-// any DOM changes down the line.
+// The initial delay and interval handles page title change by JS during
+// loading, the addition of the player HTML only when playback starts, and any
+// DOM changes down the line.
 
 
 (function() {
