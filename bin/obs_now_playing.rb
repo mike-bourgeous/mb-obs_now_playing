@@ -42,10 +42,6 @@ MB::PlayerctlClient.new do |d|
 
     puts "\n\n\t#{lines.join("\t")}\n\n"
 
-    # Calling twice deliberately -- sometimes OBS would only get part of the
-    # text, maybe due to websocket shutdown?  TODO: would a persistent
-    # websocket fix this?
-    obs.text = lines.join
     obs.text = lines.join
   else
     puts "\e[34mpaused\e[0m"
