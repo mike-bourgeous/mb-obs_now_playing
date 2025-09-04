@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     MB - YouTube Audio Library now playing details 
-// @version  August 2025
+// @version  2025-09-03
 // @grant    none
 // @include  https://studio.youtube.com/channel/*/music
 // ==/UserScript==
@@ -49,6 +49,6 @@
                 });
             }
         },
-        2000
+        500
     );
 })();
