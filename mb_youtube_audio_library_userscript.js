@@ -22,6 +22,10 @@
             const artistElement = document.querySelector('.ytmus-player.track-info #artist');
             const playerElement = document.querySelector('audio.ytmus-player');
 
+            // TODO: it might be possible to get the license type from aria
+            // attributes, making it easier to include CC license info in the
+            // chat or description
+
             if (originalTitle === undefined) {
                 originalTitle = document.title;
             }
