@@ -68,14 +68,21 @@ module MB
         until player.eof? do
           l = player.readline.strip
 
-          matches = l.match(/(?<app>\w+)\s+xesam:(?<tag>title|artist|album)\s+(?<value>.*)/)
-          next unless matches
+          case l
+          when /(?<app>\w+)\s+xesam:(?<tag>title|artist|album|url)\s+(?<value>.*)/
+            # Basic track metadata
+            app = $~[:app]
 
-          app = matches['app']
+            d[app] ||= {}
+            app_data = d[app]
+            app_data[$~[:tag].to_sym] = $~[:value]
 
-          d[app] ||= {}
-          app_data = d[app]
-          app_data[matches['tag'].to_sym] = matches['value']
+          when /(?<app>\w+)\s+mpris:trackid/
+            # Start of a new track
+            app = $~[:app]
+            d[app] ||= {}
+            d[app] = {status: d[app][:status]}
+          end
 
           timer.reset
         end

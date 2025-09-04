@@ -24,8 +24,20 @@ module MB
     def text=(new_text)
       OBSWS::Requests::Client.new(host: 'localhost', port: 4455, password: password).run do |sock|
         sock.set_input_settings(
-          'Overlay text', # input name
+          @text_source_name, # input name
           { from_file: false, text: new_text }, # input settings
+          true # merge rather than overwrite
+        )
+        "OK\n"
+      end
+    end
+
+    # Returns to loading overlay text from a file
+    def from_file
+      OBSWS::Requests::Client.new(host: 'localhost', port: 4455, password: password).run do |sock|
+        sock.set_input_settings(
+          @text_source_name, # input name
+          { from_file: true }, # input settings
           true # merge rather than overwrite
         )
         "OK\n"
@@ -35,7 +47,7 @@ module MB
     private
 
     def password
-      # TODO: reset password and try again if connection fails
+      # TODO: reload password and try again if connection fails
       @password ||= find_obs_password
     end
 
