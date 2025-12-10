@@ -25,13 +25,17 @@ begin
       if data[:url] && !data[:title] && data[:url].start_with?('file')
         begin
           uri = URI.decode_uri_component(data[:url])
-          data[:title] = uri.rpartition(%r{[/-]})[-1].rpartition('.')[0].strip
+          data[:title] = uri
         rescue => e
           STDERR.puts "\e[31mError turning URL into title: #{e}\e[0m"
         end
       end
 
       data.delete(:url)
+
+      if data[:title].include?('/') || data[:title].include?(' - ')
+        data[:title] = data[:title].rpartition(%r{[/-]})[-1].rpartition('.')[0].strip
+      end
 
       puts "\n\n\e[33m#{app} playing \e[1m#{data.values.compact.join(' - ')}\e[0m"
       # puts data
