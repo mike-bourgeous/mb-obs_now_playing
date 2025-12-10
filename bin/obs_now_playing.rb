@@ -10,6 +10,7 @@ require 'mb/obs_text_client'
 
 begin
   obs = MB::ObsTextClient.new('Music text')
+  obs2 = MB::ObsTextClient.new('Music text translucent')
 
   MB::PlayerctlClient.new do |d|
     app, info = d.detect { |app, h| h[:status] == 'Playing' }
@@ -49,12 +50,15 @@ begin
       puts "\n\n\t#{lines.join("\t").strip}\n\n\n"
 
       obs.text = lines.join
+      obs2.text = lines.join
     else
       puts "\n\n\e[34mpaused\e[0m"
       obs.text = ''
+      obs2.text = ''
     end
   end
 ensure
   # obs&.from_file
   obs&.text = ''
+  obs2&.text = ''
 end
