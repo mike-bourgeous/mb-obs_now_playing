@@ -25,6 +25,8 @@ module MB
 
             sleep @timeout
 
+            # FIXME: if metadata arrives too quickly then this never fires
+
             unless @q.empty?
               # If there's anything in the queue, it means we were woken up.
               @q.pop until @q.empty?
@@ -45,7 +47,7 @@ module MB
       end
     end
 
-    def initialize(timeout = 0.5, &block)
+    def initialize(timeout = 0.125, &block)
       d = {}
       prior_d = nil
 
@@ -94,6 +96,7 @@ module MB
         player = IO.popen('playerctl -a -F status -f "{{playerName}}||{{status}}"')
         until player.eof? do
           l = player.readline.strip
+
           app, status = l.split('||', 2)
 
           d[app] ||= {}
