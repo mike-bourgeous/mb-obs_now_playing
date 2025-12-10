@@ -65,7 +65,7 @@ module MB
         end
       end
 
-      puts "Reading password from OBS config file: #{config_file}"
+      puts "Reading password from OBS config file."  # XXX : #{config_file}"
 
       File
         .readlines(config_file)
